@@ -1,0 +1,90 @@
+{% extends template %}
+{% block title %}<title>Dashboard</title>{% endblock %}
+{% block js %}
+{% load static %}
+{% load dict_lookup %}
+{% load time %}
+<script type="text/javascript" src="{% static 'javascript/table_view.js' %}" defer></script>
+{% endblock %}
+{%block content%}
+<div class='container'>
+<h1>Dashboard</h1>
+{% if user.is_authenticated %}
+<div class="d-flex justify-content-center collapse show" id="exportBtn">
+    <a href="{% url 'export_users_csv' %}"><button class="btn btn-primary m-2">Export All to CSV</button></a>
+</div>
+  <div class='row justify-content-center g-0 mx-0'>
+    {% for keybtn, valuebtn in data.items %}
+    <div class='col-2' style="width:auto; padding: 5px">
+    <button onclick='toggleView("div.{{keybtn}}")' class="btn btn-primary m-2 dashboard level-1" id="{{keybtn}}">{{videos|keyvalue:keybtn}}</button> <br/>
+    </div>
+    {% endfor %}
+  </div>
+  
+    {% for keybtn, valuebtn in data.items %}
+    <div class='row justify-content-center g-0 mx-0 collapse level-1 dashboard' id='div.{{keybtn}}'>
+      <h2 style="text-align:center">{{videos|keyvalue:keybtn}}</h2>
+      {% for i in valuebtn%}
+         {% for kbtn, vbtn in i.items %}
+        <div class='col-2' style="width:auto; padding: 5px">
+        <button onclick='toggleView("table.{{keybtn}}.{{kbtn}}")' class="btn btn-secondary m-2 dashboard level-2" id="{{keybtn}}.{{kbtn}}">{{kbtn}}</button>  
+        </div>
+      
+        {% endfor %}
+      
+    {% endfor %}
+  </div>
+    {% endfor %}
+  
+
+
+    {% for key, value in data.items %}
+     {% for item in value %}  
+      {% for k, v in item.items %}  
+    <table class="table collapse level-2 dashboard" id="table.{{key}}.{{k}}">
+      <thead> 
+        <caption style="caption-side:top; text-align:center"><a href="{% url 'export_users_csv' v.0.label.id %}"><button class="btn btn-primary m-2">Export {{k}} to CSV</button></a></caption>
+        <tr>
+          <th scope="col">Value</th>
+          <th scope="col">Difference</th>
+          <th scope="col">Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for data in v %}
+        <tr>
+          <td> {{data.value}} </td>
+          <td> {{data.valueChange}}</td>
+          <td> {{data.timeStamp|get_time}}</td>
+          <td><img src={{data.frame.frameFile.url}} id="image_prev"/></td>
+        </tr>
+
+          {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
+        {% endfor %}
+
+
+    {% empty %}
+    <h2 id="noData">No Data Found</h2>
+    {% endfor %}
+
+  </div>
+{% else %}
+  <p><a href="{% url 'profile' %}">You need to be logged in</a></p>
+{% endif %}
+
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    var exBtn = document.getElementById('exportBtn');
+    if(document.getElementById('noData')){
+      exBtn.classList.remove('show');
+      exBtn.classList.add('invisible');
+    }
+    });
+</script>
+
+{% endblock %}
+
+

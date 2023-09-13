@@ -1,0 +1,33 @@
+{% extends 'base_template.html' %}
+{% load widget_tweaks %}
+
+    <h1>Login Page</h1>
+
+{%load widget_tweaks %}
+{% block content %}
+
+
+<div class="d-flex justify-content-center">
+
+<form method="POST">
+  <!-- Email input -->
+    {% csrf_token %}
+        <fieldset>
+            <legend>Login to account</legend>
+            {{form.username|add_class:'form-control'|attr:"placeholder: Enter username"}}
+            <br>
+            {{form.password|add_class:'form-control'|attr:"placeholder: Enter password"}}
+        </fieldset>
+
+  <!-- Submit button -->
+    <br>
+  <button type="submit" class="btn btn-primary btn-block mb-4">Sign in</button>
+
+  <!-- Register buttons -->
+  <div class="text-left">
+    <p><a href="{% url 'register' %}">Register</a></p>
+  </div>
+</form>
+</div>
+{% endblock content %}
+
